@@ -1,0 +1,11 @@
+https://en.wikipedia.org/wiki/Outlier
+https://en.wikipedia.org/wiki/Acids_in_wine
+http://waterhouse.ucdavis.edu/whats-in-wine/volatile-acidity
+http://winemakersacademy.com/importance-ph-wine-making/
+http://stackoverflow.com/questions/5106782/use-of-ggplot-within-another-function-in-r
+
+
+
+
+
+
