@@ -10,6 +10,7 @@ output: html_document
 library(ggplot2)
 library(gridExtra)
 library(dplyr)
+
 # Notice that the parameter "echo" was set to FALSE for this code chunk.
 # This prevents the code from displaying in the knitted HTML output.
 # You should set echo=FALSE for all code chunks in your file.
@@ -51,6 +52,8 @@ median fixed.acidity is 7.90.The max volatile.acidity is 1.58.The median PH is 3
 #Univariate Plots
 
 ```{r echo=FALSE}
+#create a function to plot simple histogram
+#params: x variable, x label
 
 plot_univariate_histogram <- function(x,xlab) {
   return(qplot(data = red_wine, x = x,xlab = xlab, geom = 'histogram'))
@@ -66,9 +69,16 @@ Almost 640 wine have quality 5, 620 have quality 6, then 7, 4, 8, and finally 3 
 we can categorize the qaulity into 3 categories (bad, fair and good) by creating new categorical variable called quality_rating
 
 ```{r echo=FALSE}
+#create new variable 'quality_rating' with a value (bad, fair, or good)
+#based on the quality variable as below:
+# if quality less than 5 (3 or 4): bad
+#else if quality less than 7 (5 or 6): fair
+#else (7 or 8): good
 
 red_wine$quality_rating <- ifelse(red_wine$quality < 5, 'bad', ifelse(
   red_wine$quality < 7, 'fair', 'good'))
+
+#order the quality_rating value, bad is the worst and good is the best.
 
 red_wine$quality_rating <- ordered(red_wine$quality_rating,
                      levels = c('bad', 'fair', 'good'))
@@ -91,33 +101,25 @@ The most dominant quality is the fair quality
 
 plot_univariate_histogram(red_wine$volatile.acidity,'volatile acidity')
 
-summary(red_wine$volatile.acidity)
-
-ggplot(aes(x=volatile.acidity),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_continuous(breaks=seq(0.1,1.6,0.1))
 ```
 
-The last plot shows that volatile.acidity has a long tailed distribution.
+volatile.acidity has a long tailed distribution.lets trasnsform it using log10 base 
 
 ```{r echo=FALSE}
 
 ggplot(aes(x=volatile.acidity),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_continuous(lim = c(0, quantile(red_wine$volatile.acidity, 0.95))) +
-  xlab('volatile.acidity, 95th percentile truncated')
+  geom_histogram()+
+  scale_x_log10(breaks=seq(0.1,1,0.1)) +
+  xlab('volatile.acidity, log10')
 ```
 
-I can hardly see that volatile.acidity is normally distributed.
+volatile.acidity is normally distributed.
 
 
 ```{r echo=FALSE}
 
 plot_univariate_histogram(red_wine$fixed.acidity,'fixed acidity')
-summary(red_wine$fixed.acidity)
 
-ggplot(aes(x=fixed.acidity),data = red_wine)+
-  geom_histogram(binwidth=0.1)
 ```
 
 fixed.acidity has a long tailed distribution.
@@ -125,19 +127,17 @@ fixed.acidity has a long tailed distribution.
 ```{r echo=FALSE}
 
 ggplot(aes(x=fixed.acidity),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_log10()
+  geom_histogram()+
+  scale_x_log10(breaks=seq(4,16,1))+
+  xlab('fixed.acidity, log10')
 ```
 
-fixed.acidity has a normal distribution.
+displaying fixed.acidity on log10 base scale reveals that fixed.acidity has a normal distribution.
 
 
 ```{r echo=FALSE}
 
 plot_univariate_histogram(red_wine$citric.acid,'citric acid')
-summary(red_wine$citric.acid)
-
-qplot(x=citric.acid,data = red_wine, binwidth=0.01)
 
 table(red_wine$citric.acid==0)
 ```
@@ -146,7 +146,7 @@ table(red_wine$citric.acid==0)
 As we can see most wines have citric.acid between 0 and 0.5.
 132 red wines have 0 citric.acid value.
 
-The last plot shows that citric.acid is not normally distributed.
+citric.acid is not normally distributed.
 
 Now I'll create new varible represents total fixed acids of wine (fixed.acidity + citric.acids). lets call it total.fixed.acids
 
@@ -154,12 +154,8 @@ Now I'll create new varible represents total fixed acids of wine (fixed.acidity 
 
 red_wine$total.fixed.acids <-red_wine$fixed.acidity+red_wine$citric.acid
 
-summary(red_wine$total.fixed.acids)
-
 plot_univariate_histogram(red_wine$total.fixed.acids,'total fixed acids')
 
-ggplot(aes(x=total.fixed.acids),data = red_wine)+
-  geom_histogram(binwidth=0.1)
 ```
 
 total.fixed.acids variables has a long tailed distribution.
@@ -167,8 +163,9 @@ total.fixed.acids variables has a long tailed distribution.
 ```{r echo=FALSE}
 
 ggplot(aes(x=total.fixed.acids),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_log10()
+  geom_histogram()+
+  scale_x_log10(breaks=seq(4,17,1))+
+  xlab('total.fixed.acids, log10')
 ```
 
 Plotting total.fixed.acids on log 10 base scale reveals that total.fixed.acids is normally distributed.
@@ -178,41 +175,31 @@ Plotting total.fixed.acids on log 10 base scale reveals that total.fixed.acids i
 
 plot_univariate_histogram(red_wine$residual.sugar,'residual sugar')
 
-summary(red_wine$residual.sugar)
-
-ggplot(aes(x=residual.sugar),data = red_wine)+
-  geom_histogram(binwidth=0.1)+
-  scale_x_continuous(breaks=seq(0,16,1))
 ```
 
-The last plot show that most wines have residual.sugar value between 1.5 and 3.
-It also shows that residual.sugar has heavy tailed distribution with many outliers.
+residual.sugar has heavy tailed distribution with alot of outliers.
 
 ```{r echo=FALSE}
 
 ggplot(aes(x=residual.sugar),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_log10()
+  geom_histogram()+
+  scale_x_log10(breaks=seq(1,10,1))+
+  xlab('residual.sugar, log10')
 
 ```
 
-Even log10 scale of residual.sugar reveals this heavy tailed distribution.
+Even log10 scale of residual.sugar assures this heavy tailed distribution.
 
 I thought of creating new variable classifying red wines into 2 categories (sweet and non-sweet) wines but in the dataset the max value of residual.sugar is 15.500 and the wine is considered sweet if it has at least 45 residual.sugar.
 
 
 ```{r echo=FALSE}
 
-plot_univariate_histogram(red_wine$chlorides,'residual sugar')
+plot_univariate_histogram(red_wine$chlorides,'chlorides')
 
-summary(red_wine$chlorides)
-
-ggplot(aes(x=chlorides),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_continuous(breaks=seq(0,0.7,0.05))
 ```
 
-The last plot show that most wines have chlorides value between 0.03 and 0.13.
+The last plot show that most wines have chlorides value less than 0.2.
 It also shows that chlorides has heavy tailed distribution with many outliers like residual.sugar.
 
 
@@ -220,33 +207,33 @@ It also shows that chlorides has heavy tailed distribution with many outliers li
 
 plot_univariate_histogram(red_wine$free.sulfur.dioxide,'free.sulfur.dioxide')
 
+```
+
+The distribution is not clear.I need to adjust binwidth to get better visualization
+
+```{r echo=FALSE}
 summary(red_wine$free.sulfur.dioxide)
 
 qplot(x=free.sulfur.dioxide,data = red_wine,binwidth=1)
 ```
 
-free.sulfur.dioxide is long tailed distributed.
+adjusting binwidth reveals that free.sulfur.dioxide has a right skewed distribution.
 
 
 ```{r echo=FALSE}
 
-plot_univariate_histogram(red_wine$total.sulfur.dioxide,'total.sulfur.dioxide')
+plot_univariate_histogram(red_wine$total.sulfur.dioxide,
+                          'total.sulfur.dioxide')
 
-ggplot(aes(x=total.sulfur.dioxide),data = red_wine)+
-  geom_histogram(binwidth=1)
 ```
 
-total.sulfur.dioxide is long tailed distributed like free.sulfur.dioxide.
+total.sulfur.dioxide  has a right skewed distribution like free.sulfur.dioxide.
 
 
 ```{r echo=FALSE}
 
 plot_univariate_histogram(red_wine$density,'density')
 
-summary(red_wine$density)
-
-ggplot(aes(x=density),data = red_wine)+
-  geom_histogram(binwidth=0.00001)
 ```
 
 It is obvious that density is normally distributed
@@ -256,24 +243,14 @@ It is obvious that density is normally distributed
 
 plot_univariate_histogram(red_wine$pH,'pH')
 
-summary(red_wine$pH)
-
-ggplot(aes(x=pH),data = red_wine)+
-  geom_histogram(binwidth=0.01)+
-  scale_x_continuous(breaks=seq(2,4.5,0.1))
 ```
 
-PH has a normal distribution with few outliers like density.
+PH has a normal distribution with few outliers.
 
 
 ```{r echo=FALSE}
 
 plot_univariate_histogram(red_wine$sulphates,'sulphates')
-
-summary(red_wine$sulphates)
-
-ggplot(aes(x=sulphates),data = red_wine)+
-  geom_histogram(binwidth=0.01)
 
 ```
 
@@ -282,8 +259,9 @@ sulphates has a long tailed distribution.
 ```{r echo=FALSE}
 
 ggplot(aes(x=sulphates),data = red_wine)+
-  geom_histogram(binwidth=0.001)+
-  scale_x_log10()
+  geom_histogram()+
+  scale_x_log10(breaks=seq(0.1,1,0.1))+
+  xlab('sulphates, log10')
 
 ```
 
@@ -294,23 +272,20 @@ Transforming sulphates on log10 base shows that sulphates has a normal distribut
 
 plot_univariate_histogram(red_wine$alcohol,'alcohol')
 
-summary(red_wine$alcohol)
-
-ggplot(aes(x=alcohol),data = red_wine)+
-  geom_histogram(binwidth=0.1)
 ```
 
-alcohol has a long tailed distribution.
+alcohol has a right skewed distribution.
 
 ```{r echo=FALSE}
 
 ggplot(aes(x=alcohol),data = red_wine)+
-  geom_histogram(binwidth=0.001)+
-  scale_x_log10()
+  geom_histogram()+
+  scale_x_log10(breaks=seq(8,20,1))+
+  xlab('alcohol, log10')
 
 ```
 
-Still has a non normal distribution with a long tail.
+even transformation on log10 base assures that alcohol has a non normal distribution.
 
 # Univariate Analysis
 
@@ -377,7 +352,7 @@ All I did with these data just setting binwidth and transform data to get better
 # Bivariate Plots Section
 
 ```{r echo=FALSE}
-
+# display the correlation between every pair of variables excluding X variable.
 x <- red_wine[2:13]
 x <- cbind(x, red_wine[15])
 y <- red_wine[2:13]
@@ -394,21 +369,32 @@ Also note that free.sulfur.dioxid correaltes with total.sulfur.dioxide (0.668) w
 Finally we can see that total_acids is correlated with fixed.acidity (0.996) and citric.acid (0.690) which seems logical because total acids variable is the sum of the 3 acids.
 
 ```{r echo=FALSE}
+#create a function to plot the relationships between quality 
+#and any other variable in a form of scatter plot with boxpot
+#params: variable to be explored against quality variable
 
-plot_bivariate_points <- function(x,y,xlab,ylab) {
-  return(qplot(data = red_wine, x = x, y=y, xlab = xlab, ylab = ylab))
+quality_factor=factor(red_wine$quality)
+
+plot_quality_relatioships <- function(yvar) {
+  return( ggplot(data = red_wine,
+       aes_string(x='quality_factor', y = yvar)) +
+        geom_point()+
+         xlab('quality')+
+  geom_boxplot()
+  )
 }
 
-plot_bivariate_points(red_wine$quality,red_wine$alcohol,'quality', 'alcohol')
+plot_quality_relatioships('alcohol')
 
 ```
 
-This plot shows that high quality wine has high value of alcohol.we can also notice the vertical strips which indicates that quality is a discrete variable taking one of these values (3, 4, 5, 6, 7, and 8).
+This plot shows that high quality wine has high value of alcohol.we can also notice the vertical strips which indicates that quality is a discrete variable taking one of these values (3, 4, 5, 6, 7, and 8).Median increases for high qualities(6, 7 and 8).
+75 % of high quality wines have alcohol values exeeding 11. in lower qualities wines it is under 11. 
 
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$volatile.acidity,'quality', 'volatile.acidity')
+plot_quality_relatioships('volatile.acidity')
 
 ```
 
@@ -416,73 +402,72 @@ high quality wine has low value of volatile.acidity which matches the effect of 
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$fixed.acidity,'quality', 'fixed.acidity')
+plot_quality_relatioships('fixed.acidity')
 
 ```
 
-This plot shows that wines with low quality 3 and 4 have max fixed.acidity value around 12. while the other higher qualities have higher values of fixed.acidity, that reveals that high quality wine has high value of fixed.acidity
+high qualities have high values of fixed.acidity
+
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$citric.acid,'quality', 'citric.acid')
+plot_quality_relatioships('citric.acid')
 
 ```
 
-This plot shows that high quality wine has high value of citric.acid
+This plot shows a clear positive impact of citric acid on the quality.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$residual.sugar,'quality', 'residual.sugar')
+plot_quality_relatioships('residual.sugar')
 
 ```
 
-The plot doesn't show any impact of residual.sugar on quality.
+The plot doesn't show any impact of residual.sugar on quality.median and quantiles values of residual.sugar cross the ualities are very close.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$chlorides,'quality', 'chlorides')
+plot_quality_relatioships('chlorides')
 
 ```
 
-This plot shows that most wines with high quality 7 and 8 have chlorides value around 0.1. while the other lower qualities have higher values of chlorides, that reveals that high quality wine has low value of chlorides.
+high quality wine has low value of chlorides
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$free.sulfur.dioxide,'quality', 'free.sulfur.dioxide')
+plot_quality_relatioships('free.sulfur.dioxide')
 
 ```
 
-The plot shows that free.sulfur.dioxide has no impact on quality.
+The plot shows that there is no linear relationship between free.sulfur.dioxide and quality
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$total.sulfur.dioxide,'quality', 'total.sulfur.dioxide')
+plot_quality_relatioships('total.sulfur.dioxide')
 
 ```
 
-The plot reveals that alot of top highest quality wines'total.sulfur.dioxide value don't exceed 100 while others have total.sulfur.dioxide exceeding 100.
-
-So we can hardly see that high quality wine has low total.sulfur.dioxide value.
+I can hardly see that high quality wine has low total.sulfur.dioxide value.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$density,'quality', 'density')
+plot_quality_relatioships('density')
 
 ```
 
-low quality has high value of density while high quality has lower value of density.So we can say that high quality wine has low density value.
+low qualities have high values of density while high qualities have lower values of density.So we can say that high quality wine has low density value.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$pH,'quality', 'pH')
+plot_quality_relatioships('pH')
 
 ```
 
-It is roughly seems that high quality wine has low pH value
+It is seems that high quality wine has low pH value
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$sulphates,'quality', 'sulphates')
+plot_quality_relatioships('sulphates')
 
 ```
 
@@ -490,7 +475,7 @@ high quality wines have higher values of sulphates than low quality wines.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$quality,red_wine$total.fixed.acids,'quality', 'total.fixed.acids')
+plot_quality_relatioships('total.fixed.acids')
 
 ```
 
@@ -498,8 +483,55 @@ high quality wines have high value of total.fixed.acids
 
 
 ```{r echo=FALSE}
+#create a function to plot the relationships between quality_rating
+#and any other variable in a form of scatter plot with boxpot
+#params: variable to be explored against quality_rating variable
 
-plot_bivariate_points(red_wine$total.fixed.acids,red_wine$pH,'total.fixed.acids', 'pH')
+plot_quality_rating_relatioships <- function(yvar) {
+  return( ggplot(data = red_wine,
+       aes_string(x='quality_rating', y = yvar)) +
+        geom_point()+
+         xlab('quality rating')+
+  geom_boxplot()
+  )
+}
+
+```
+
+```{r echo=FALSE}
+
+  plot_quality_rating_relatioships('alcohol')
+
+```
+
+bad and fair wines have the same median value of alcohol but good wines have higher median value of alcohol.
+
+```{r echo=FALSE}
+#plot grid of relatioships between quality_rating and [fixed.acidity,
+#citric.acid and volatile.acidity]
+
+grid.arrange(
+  plot_quality_rating_relatioships('fixed.acidity'),
+  plot_quality_rating_relatioships('citric.acid'),
+  plot_quality_rating_relatioships('volatile.acidity')
+)
+
+```
+
+This plot shows that good wines have high values of both fixed.acidity and citric.acid, and low values of volatile.acidity.
+
+
+```{r echo=FALSE}
+#create a function to plot simple scatter plot
+#params: x variable, y variable, x label, y label
+
+plot_bivariate_points <- function(x,y,xlab,ylab) {
+  return(qplot(data = red_wine, x = x, y=y, xlab = xlab, ylab = ylab))
+}
+
+plot_bivariate_points(red_wine$total.fixed.acids,red_wine$pH,
+                      'total.fixed.acids', 'pH')+
+  geom_smooth()
 
 ```
 
@@ -508,11 +540,14 @@ The plot shows an exponential relationship between total.fixed.acids and pH.
 
 ```{r echo=FALSE}
 
-plot_bivariate_points(red_wine$total.fixed.acids,red_wine$fixed.acidity,'total.fixed.acids', 'fixed.acidity')
+plot_bivariate_points(red_wine$total.fixed.acids,red_wine$fixed.acidity,
+                      'total.fixed.acids', 'fixed.acidity')+
+  geom_smooth(method='lm',color='red')
 
 ```
 
 The plot reveals a linear relationship between total.fixed.acids and fixed.acidity
+
 
 # Bivariate Analysis
 
@@ -541,6 +576,9 @@ The relationship between fixed.acidity and total.fixed.acids
 In this section I 'll explore the most interesting variables that may affect the quality in conjunction with quality and quality_rating variable.
 
 ```{r echo=FALSE}
+#create a function to plot scatter plot colored in quality variable 
+#and faceted by quality_rating 
+#params: x variable, y variable
 
 plot_multivariate_points <- function(xvar,yvar) {
   return( ggplot(data = red_wine,
@@ -575,6 +613,8 @@ The strong relationship between free.sulfur.dioxide and total.sulfur.dioxide is 
 But for total.sulfur.dioxide we can hardly see that high quality wines have high value of free.sulfur.dioxide.
 
 ```{r echo=FALSE}
+#plot grid of the relationships between pH and [fixed.acidity,
+#total.fixed.acids and alcohol]
 grid.arrange(
   plot_multivariate_points("fixed.acidity","pH"),
   plot_multivariate_points("total.fixed.acids","pH"),
@@ -629,28 +669,18 @@ No
 ### Plot One
 ```{r echo=FALSE, Plot_One}
 
-grid.arrange(
   ggplot(aes(x=quality),data=red_wine)+
-    geom_histogram(binwidth=0.5,aes(fill=factor(quality)))+
+    geom_histogram(binwidth=0.5,aes(fill=quality_rating))+
     ggtitle('number of wines per quality')+
     xlab('quality (best quality=8)')+
     ylab('number of wines')+
-    scale_x_continuous(breaks=seq(3,8,1)),
-  
-  ggplot(aes(x=quality_rating),data=red_wine)+
-    geom_histogram(aes(fill=quality_rating))+
-    ggtitle('number of wines per quality rating')+
-    xlab('quality rating (best rating=good)')+
-    ylab('number of wines')
-  )
+    scale_x_continuous(breaks=seq(3,8,1))
 
 ```
 
 ### Description One
 
-This plot demonstrates 2 forms of wine quality. the first is the initial quality variable which takes an ordered discrete value from 3 to 8.
-
-The second form represents my created variable quality_rating which categorizes the quality values into 3 categories [bad, fair, and good].
+This plot demonstrates wine quality, which takes an ordered discrete value from 3 to 8. filled in quality rating which categorizes the quality values into 3 categories [bad, fair, and good].
 
 we can see that the most dominant quality in the dataset is fair [5 and 6], then good [7 and 8], and least one is bad [3 and 4]
 
@@ -659,52 +689,54 @@ we can see that the most dominant quality in the dataset is fair [5 and 6], then
 ```{r echo=FALSE, Plot_Two}
 
 grid.arrange(
-  ggplot(data = red_wine, aes(x = quality_rating,
-                              y=volatile.acidity,fill=quality_rating)) + 
-        geom_boxplot()+
-        xlab('quality rating (best rating= good)')+
-        ylab('volatile acidity')+
-    coord_cartesian(ylim = c(0.2,1))+
-       
-    ggtitle('Impact of volatile.acidity on quality rating'),
+  ggplot(data = red_wine, aes(x = factor(quality),
+                              y=volatile.acidity,fill=quality_rating)) +
+    geom_point()+
+    geom_boxplot()+
+    xlab('quality (best quality= 8)')+
+    ylab('volatile acidity')+
+    coord_cartesian(ylim = c(0.2,1.2))+
+    ggtitle('Impact of volatile.acidity on quality'),
   
-  ggplot(data = red_wine, aes(x = quality_rating, y=pH,fill=quality_rating)) + 
-      geom_boxplot()+
-      xlab('quality rating (best rating= good)')+
-      ylab('pH')+
-    coord_cartesian(ylim = c(3.1,3.6))+
-    ggtitle('Impact of pH on quality rating')
+  ggplot(data = red_wine, aes(x = factor(quality), y=fixed.acidity,
+                              fill=quality_rating)) + 
+    geom_point()+
+    geom_boxplot()+
+    xlab('quality (best quality= 8)')+
+    ylab('fixed.acidity')+
+   coord_cartesian(ylim = c(4,12))+
+    ggtitle('Impact of fixed.acidity on quality'),
+  
+  ggplot(data = red_wine, aes(x = factor(quality), y=citric.acid,
+                              fill=quality_rating)) + 
+    geom_point()+
+    geom_boxplot()+
+    xlab('quality (best quality= 8)')+
+    ylab('citric.acid')+
+   coord_cartesian(ylim = c(0,0.75))+
+    ggtitle('Impact of citric.acid on quality')
   )
 ```
 
 ### Description Two
 
-This plot shows the impact of volatile.acidity and pH on the quality.we can clearly see that good wines have low values of both volatile.acidity and pH.
+This plot shows the impact of acids on the quality.we can clearly see that good wines have low values of volatile.acidity and high values of both fixed and citric acids.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
-#group dataset by quality rating
-wines_by_quality_rating <- group_by(red_wine, quality_rating)
-
-#create median_alcohol of each quality rating group
-wines_by_quality_rating_alcohol <- summarise(wines_by_quality_rating,
-                                               median_alcohol = median(alcohol))
-
-#plot median alcohol value for each quality rating group 
-
-ggplot(wines_by_quality_rating_alcohol, aes(x = quality_rating,y = median_alcohol,
-                                              fill=quality_rating)) +
-        geom_bar(stat = "identity")+
-        scale_y_continuous(breaks=seq(0,12,2))+
-        xlab('quality rating (best rating=good)')+
-        ylab('medain alcohol')+
-        ggtitle('median alcohol for each quality rating')
+ ggplot(data = red_wine,aes(x=factor(quality), 
+                            y = alcohol, fill=quality_rating)) +
+  geom_point()+
+  geom_boxplot()+
+  xlab('quality (best quality= 8)')+
+  coord_cartesian(ylim = c(8,13))+
+  ggtitle('Impact of alcohol on quality')
   
 ```
 
 ### Description Three
 
-This plot demonstrates the impact of alcohol on quality rating, the median values of alcohol for bad and fair wines is 10. good wines have median value of alcohol around 11.good wines have high values of alcohol. 
+This plot demonstrates the impact of alcohol on quality, good wines have high values of alcohol.
 
 
 # Reflection
@@ -715,7 +747,7 @@ After that I created a new categorical variable 'quality_rating' which categoriz
 
 I explored the quality variable across all the other variables to understand the impact of the variables on the quality.
 
-I am able to specify that the main features affecting the quality are alcohol and acidity.there is also other features that have a low impact like sulphates, density and pH.
+I am able to specify that the main features affecting the quality are alcohol and acids.there is also other features that have a low impact like sulphates, density and pH.
 
 I would be interesting in creating a linear model and testing its accuracy
 
