@@ -31,4 +31,4 @@ The results showed that the main features affecting the quality are alcohol and 
 
 ## References
 
-See this [file](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/references.txt)
+See this file [references](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/references.txt)
