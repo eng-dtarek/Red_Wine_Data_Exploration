@@ -16,6 +16,7 @@ Exploring the red wine dataset to detect most of the expected relationships, fin
 ## Technologies
 
 - R
+- R Markdown
 - HTML
 
 ## Project Description
