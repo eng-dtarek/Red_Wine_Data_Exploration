@@ -6,7 +6,7 @@ This project is a part of the [Data Analyst Nanodegree](https://www.udacity.com/
 
 ## Project Introduction
 
-Exploring the red wine dataset to detect most of the expected relationships, find the most interesting feature and analyze it across all the other variables to understand the impact of the variables on it.
+Exploring the red wine [data set](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/wineQualityReds.csv) to detect most of the expected relationships, find the most interesting feature and analyze it across all the other variables to understand the impact of the variables on it.
 
 ## Methods Used
 
@@ -21,7 +21,7 @@ Exploring the red wine dataset to detect most of the expected relationships, fin
 
 ## Project Description
 
-I began with exploring the structure of tha data set. Then I applied univariate analysis to understand the nature of each feature. After that, I used bivariate and multivariate analysis to detect the expected relationships. (for more details see this [documentation](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/red-wine-data-exploration.html))
+I began with exploring the structure of tha [data set](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/wineQualityReds.csv). Then I applied univariate analysis to understand the nature of each feature. After that, I used bivariate and multivariate analysis to detect the expected relationships. (for more details see this [documentation](https://github.com/eng-dtarek/Red_Wine_Data_Exploration/blob/master/red-wine-data-exploration.html))
 
 
 ## Reflection
